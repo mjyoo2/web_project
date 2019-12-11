@@ -1,0 +1,62 @@
+{% macro table(name, datas, fields) %}
+    <div class="container-fluid bg-light" style="height: 100%;">
+      <div class="row" style="height: 100%;">
+        <div class="offset-md-2 col-md-8 offset-lg-3 col-lg-6" style="padding-top: 150px; height: 100%;">
+          <h1>{{name}}</h1>
+          <table class="table">
+            <thead>
+              <tr>
+                {% for field in fields %}
+                  <th>{{ field }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+            {% for data in datas %}
+              <tr>
+                {% for field in fields %}
+                  <td>{{ data['{{ field }}'] }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% macro width_table(data, fields) %}
+    <div class="container-fluid bg-light" style="height: 100%;">
+      <div class="row" style="height: 100%;">
+        <div class="col-lg-8 offset-lg-2 col-md-10, offset-md-1" style="padding-top:150px; height: 100%;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Information</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for field in fields %}
+              <tr>
+                <th> {{ field }} </th>
+                <td> {{ data['{{ field }}'] }} </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% macro buttons(links) %}
+  <div class="form-group">
+    <div class="offset-lg-2 offset-md-1">
+      {% for link in links %}
+      <button type="button" onclick="location.href='{{ link['address'] }}'" class="btn btn-default bg-primary">{{ link['name'] }}</button>
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}

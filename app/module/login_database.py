@@ -21,7 +21,7 @@ def register_db(database, id, name, password):
     if query_prev:
         return False
     try:
-        sql_command = 'insert into user values(\'{}\', \'{}\', \'{}\', 0)'.format(id, password, name)
+        sql_command = 'insert into user value(\'{}\', \'{}\', \'{}\', 0)'.format(id, password, name)
         database.execute(sql_command)
         database.commit()
     except:

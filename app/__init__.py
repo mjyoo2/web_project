@@ -1,8 +1,9 @@
+import numpy as np
 from flask import Flask, render_template, redirect, url_for, request, jsonify, flash
 from app.module.login_database import login_db, get_info_db, register_db
 from app.module.Info import Info
 from app.module.web_lab import web_lab_get, web_lab_insert, web_lab_delete, web_lab_revise
-from app.module.trade import get_trades, get_sell_trades, get_trade, register_trade, get_buy_trades
+from app.module.trade import get_trades, get_sell_trades, get_trade, register_trade, get_buy_trades, delete_trades, purchase_trade
 from app.module.wishlist import get_wish_list, insert_wish_list
 from app.module.user_database import get_user_info, delete_user_info
 from app.module.database import Database
@@ -14,12 +15,20 @@ app = Flask(__name__)
 
 @app.route('/main', methods=['GET'])
 def main():
+    try:
+        index = int(request.args.get('index'))
+    except:
+        index = 1
     id = info_user.id
     id, name, money = get_info_db(database, id)
     trades = get_trades(database)
+    start = np.amax([1, index - 5])
+    end = np.amin([(((len(trades) - 1) // 10) + 2), start + 10])
+    length = list(np.arange(start, end))
+    trades = trades[(index - 1) * 10 + 1: index * 10 + 1]
     user = [{'id': id, 'name': name, 'money': money}]
     if database.valid:
-        return render_template('/main.html', user=user, trades=trades)
+        return render_template('/main.html', user=user, trades=trades, length=length, mode=info_user.mode)
     else:
         return redirect(url_for('bad_access'))
 
@@ -27,10 +36,6 @@ def main():
 def bad_access():
     database.valid = True
     return render_template('/bad_access.html')
-
-@app.route('/info')
-def info():
-    return render_template('info.html')
 
 @app.route('/mypage')
 def mypage():
@@ -51,6 +56,12 @@ def mypage_seller():
         return redirect(url_for('bad_access'))
 
 
+@app.route('/trade_delete', methods=['POST'])
+def trade_delete():
+    tid_list = request.form.getlist('delete')
+    delete_trades(database, tid_list)
+    return redirect(url_for('mypage_seller'))
+
 @app.route('/mypage_buyer')
 def mypage_buyer():
     id = info_user.id
@@ -60,6 +71,18 @@ def mypage_buyer():
         return render_template('/mypage_buyer.html', trades=trades, wishlists=wishlists)
     else:
         return redirect(url_for('bad_access'))
+
+@app.route('/purchase', methods=['POST'])
+def purchase():
+    id = info_user.id
+    trades = get_wish_list(database, id)
+    t_ids = []
+    amounts = []
+    for trade in trades:
+        amounts.append(int(request.form.get('{}'.format(trade['t_id']))))
+        t_ids.append(trade['t_id'])
+    purchase_trade(database, t_ids, amounts, info_user.id)
+    return redirect(url_for('mypage_buyer'))
 
 @app.route('/product', methods=['GET'])
 def product():

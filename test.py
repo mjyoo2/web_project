@@ -4,6 +4,5 @@ import numpy as np
 import pickle as pkl
 
 if __name__ == '__main__':
-    a= 1
-    with open('hhh.pkl', 'wb') as f:
-        pkl.dump(a, f)
+    a = [1, 2, 3, 4, 5]
+    print(a[3: 10])

@@ -1,5 +1,5 @@
 def web_lab_insert(database, id, depart, name, address, phone):
-    sql_command = 'insert into student values({}, \'{}\', \'{}\', \'{}\', \'{}\');'.format(id, depart, name, address, phone)
+    sql_command = 'insert into student value({}, \'{}\', \'{}\', \'{}\', \'{}\');'.format(id, depart, name, address, phone)
     database.execute(sql_command)
     return
 
